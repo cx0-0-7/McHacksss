@@ -15,12 +15,21 @@ class Point:
 
 @dataclass
 class KeyLandmarks:
-    shoulder: Point
-    elbow: Point
-    wrist: Point
-    hip: Point
-    knee: Point
-    ankle: Point
+    # Right Side
+    r_shoulder: Point
+    r_elbow: Point
+    r_wrist: Point
+    r_hip: Point
+    r_knee: Point
+    r_ankle: Point
+    
+    # Left Side
+    l_shoulder: Point
+    l_elbow: Point
+    l_wrist: Point
+    l_hip: Point
+    l_knee: Point
+    l_ankle: Point
 
 
 # ----------------------------
@@ -65,21 +74,29 @@ class PoseTracker:
             "ankle": 27,
         }
 
-    def extract_key_landmarks(self, result, side="right") -> KeyLandmarks | None:
-        """Extract key landmarks for the given side"""
-        if not result.pose_landmarks:
+    def extract_key_landmarks(self, results) -> KeyLandmarks | None:
+        if not results.pose_landmarks:
             return None
 
-        lm = result.pose_landmarks[0]  # first detected person
-        indices = self.RIGHT if side.lower() == "right" else self.LEFT
+        lm = results.pose_landmarks.landmark
+        PL = self.mp_pose.PoseLandmark
 
         return KeyLandmarks(
-            shoulder=Point(lm[indices["shoulder"]].x, lm[indices["shoulder"]].y, lm[indices["shoulder"]].visibility),
-            elbow=Point(lm[indices["elbow"]].x, lm[indices["elbow"]].y, lm[indices["elbow"]].visibility),
-            wrist=Point(lm[indices["wrist"]].x, lm[indices["wrist"]].y, lm[indices["wrist"]].visibility),
-            hip=Point(lm[indices["hip"]].x, lm[indices["hip"]].y, lm[indices["hip"]].visibility),
-            knee=Point(lm[indices["knee"]].x, lm[indices["knee"]].y, lm[indices["knee"]].visibility),
-            ankle=Point(lm[indices["ankle"]].x, lm[indices["ankle"]].y, lm[indices["ankle"]].visibility),
+            # RIGHT
+            r_shoulder=Point(lm[PL.RIGHT_SHOULDER].x, lm[PL.RIGHT_SHOULDER].y, lm[PL.RIGHT_SHOULDER].visibility),
+            r_elbow=Point(lm[PL.RIGHT_ELBOW].x, lm[PL.RIGHT_ELBOW].y, lm[PL.RIGHT_ELBOW].visibility),
+            r_wrist=Point(lm[PL.RIGHT_WRIST].x, lm[PL.RIGHT_WRIST].y, lm[PL.RIGHT_WRIST].visibility),
+            r_hip=Point(lm[PL.RIGHT_HIP].x, lm[PL.RIGHT_HIP].y, lm[PL.RIGHT_HIP].visibility),
+            r_knee=Point(lm[PL.RIGHT_KNEE].x, lm[PL.RIGHT_KNEE].y, lm[PL.RIGHT_KNEE].visibility),
+            r_ankle=Point(lm[PL.RIGHT_ANKLE].x, lm[PL.RIGHT_ANKLE].y, lm[PL.RIGHT_ANKLE].visibility),
+            
+            # LEFT
+            l_shoulder=Point(lm[PL.LEFT_SHOULDER].x, lm[PL.LEFT_SHOULDER].y, lm[PL.LEFT_SHOULDER].visibility),
+            l_elbow=Point(lm[PL.LEFT_ELBOW].x, lm[PL.LEFT_ELBOW].y, lm[PL.LEFT_ELBOW].visibility),
+            l_wrist=Point(lm[PL.LEFT_WRIST].x, lm[PL.LEFT_WRIST].y, lm[PL.LEFT_WRIST].visibility),
+            l_hip=Point(lm[PL.LEFT_HIP].x, lm[PL.LEFT_HIP].y, lm[PL.LEFT_HIP].visibility),
+            l_knee=Point(lm[PL.LEFT_KNEE].x, lm[PL.LEFT_KNEE].y, lm[PL.LEFT_KNEE].visibility),
+            l_ankle=Point(lm[PL.LEFT_ANKLE].x, lm[PL.LEFT_ANKLE].y, lm[PL.LEFT_ANKLE].visibility)
         )
 
 
