@@ -1,5 +1,6 @@
 import cv2
 from landmarks import PoseTracker, print_visible_landmarks
+import mediapipe
 
 def main():
     cap = cv2.VideoCapture(0)
@@ -20,7 +21,16 @@ def main():
             tracker.mp_drawing.draw_landmarks(
                 frame,
                 results.pose_landmarks,
-                tracker.mp_pose.POSE_CONNECTIONS
+                tracker.mp_pose.POSE_CONNECTIONS,
+                landmark_drawing_spec= mediapipe.solutions.drawing_utils.DrawingSpec(
+                                        color=(0, 255, 0),       # Green dots
+                                        thickness=4,             # Thickness of the outline
+                                        circle_radius=6          # Size of the dot
+                                    ),  # Apply dot style
+                connection_drawing_spec= mediapipe.solutions.drawing_utils.DrawingSpec(
+                                            color=(255, 0, 0),       # Blue lines
+                                            thickness=3              # Line weight
+                                        ) # Apply line style
             )
 
         # Extract landmarks using our class method
