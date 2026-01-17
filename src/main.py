@@ -1,35 +1,43 @@
 import cv2
-import mediapipe as mp
+from landmarks import PoseTracker, print_visible_landmarks
 
-mp_hands = mp.solutions.hands
-hands = mp_hands.Hands()
+def main():
+    cap = cv2.VideoCapture(0)
+    # Initialize our tracker from the other file
+    tracker = PoseTracker()
 
-cap = cv2.VideoCapture(0)
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-while cap.isOpened():
-    ret, frame = cap.read()
-    if not ret:
-        break
+        # Convert to RGB for MediaPipe
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = tracker.pose.process(frame_rgb)
 
-    # Convert the frame to RGB as MediaPipe requires RGB input
-    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    
-    # Process the frame and get results
-    results = hands.process(rgb_frame)
-    
-    # Optional: Draw landmarks using MediaPipe drawing utilities
-    if results.multi_hand_landmarks:
-        for hand_landmarks in results.multi_hand_landmarks:
-            mp.solutions.drawing_utils.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+        # Draw skeleton on frame
+        if results.pose_landmarks:
+            tracker.mp_drawing.draw_landmarks(
+                frame,
+                results.pose_landmarks,
+                tracker.mp_pose.POSE_CONNECTIONS
+            )
 
-    # Display the resulting frame
-    cv2.imshow('MediaPipe Feed', frame)
+        # Extract landmarks using our class method
+        key = tracker.extract_key_landmarks(results)
 
-    # Break the loop when 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        if key:
+            print_visible_landmarks(key)
+            print("-----")
 
-# Release the capture and destroy windows
-cap.release()
-cv2.destroyAllWindows()
+        cv2.imshow("Pose Detection", frame)
+        
+        # Press 'q' to exit
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()
