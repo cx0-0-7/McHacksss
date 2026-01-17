@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import os
 from mediapipe.tasks.python import vision
 from mediapipe.tasks.python import BaseOptions
+import numpy as np
 
 # ----------------------------
 # DATA STRUCTURES
@@ -81,6 +82,25 @@ class PoseTracker:
             knee=Point(lm[indices["knee"]].x, lm[indices["knee"]].y, lm[indices["knee"]].visibility),
             ankle=Point(lm[indices["ankle"]].x, lm[indices["ankle"]].y, lm[indices["ankle"]].visibility),
         )
+    import numpy as np
+
+# Inside your PoseTracker class:
+    def calculate_angle(self, a, b, c):
+        """
+        Calculates the angle at point B given points A, B, and C.
+        Returns the angle in degrees.
+        """
+        a = np.array([a.x, a.y]) # First point (e.g., Shoulder)
+        b = np.array([b.x, b.y]) # Mid point (e.g., Elbow)
+        c = np.array([c.x, c.y]) # End point (e.g., Wrist)
+
+        radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
+        angle = np.abs(radians * 180.0 / np.pi)
+
+        if angle > 180.0:
+            angle = 360 - angle
+
+        return angle
 
 
 def print_visible_landmarks(key: KeyLandmarks, side=""):
