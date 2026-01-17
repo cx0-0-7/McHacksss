@@ -23,7 +23,7 @@ class KeyLandmarks:
 # POSE TRACKER CLASS
 # ----------------------------
 class PoseTracker:
-    def __init__(self, complexity=1, detection_con=0.5, tracking_con=0.5):
+    def __init__(self, complexity=2, detection_con=0.6, tracking_con=0.5,smooth_landmarks=True):
         self.mp_pose = mp.solutions.pose
         self.mp_drawing = mp.solutions.drawing_utils
         self.pose = self.mp_pose.Pose(
@@ -31,7 +31,8 @@ class PoseTracker:
             model_complexity=complexity,
             enable_segmentation=False,
             min_detection_confidence=detection_con,
-            min_tracking_confidence=tracking_con
+            min_tracking_confidence=tracking_con,
+            smooth_landmarks=smooth_landmarks
         )
 
         # Define custom connections (Shoulder -> Elbow, Elbow -> Wrist, etc.)
